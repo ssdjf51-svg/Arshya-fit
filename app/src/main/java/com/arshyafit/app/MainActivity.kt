@@ -208,16 +208,18 @@ fun TopHeader(p: UserProfile) {
     }
 }
 
+
 @Composable
-fun Onboarding(onFinish:(UserProfile)->Unit) {
+fun Onboarding(onFinish: (UserProfile) -> Unit) {
     var page by remember { mutableIntStateOf(0) }
+
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
-    var age by remember { mutableStateOf("18") }
-    var height by remember { mutableStateOf("170") }
-    var weight by remember { mutableStateOf("65") }
+    var age by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf("پسر") }
-    var exp by remember { mutableStateOf("مبتدی") }
+    var exp by remember { mutableStateOf("بدون سابقه") }
     var goal by remember { mutableStateOf("عضله‌سازی") }
     var style by remember { mutableStateOf("ترکیبی") }
     var place by remember { mutableStateOf("خانه") }
@@ -225,49 +227,303 @@ fun Onboarding(onFinish:(UserProfile)->Unit) {
     var days by remember { mutableStateOf("3") }
     var minutes by remember { mutableStateOf("45") }
     var limits by remember { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        Text("ARSHYA FIT", color=Blue, fontSize=28.sp, fontWeight=FontWeight.Black)
-        Text("پروفایل ورزشی خودت رو بساز • مرحله ${page+1} از 3", color=Muted)
-        LinearProgressIndicator(progress={(page+1)/3f}, modifier=Modifier.fillMaxWidth())
-        when(page) {
-            0 -> {
-                Text("اطلاعات پایه", fontSize=22.sp, fontWeight=FontWeight.Bold)
-                Field("نام",name,{name=it})
-                Field("نام کاربری",username,{username=it})
-                Field("سن",age,{age=it},true)
-                Field("قد (سانتی‌متر)",height,{height=it},true)
-                Field("وزن (کیلوگرم)",weight,{weight=it},true)
-                Choice("جنسیت",listOf("پسر","دختر"),gender){gender=it}
+
+    val total = 14
+
+    val titles = listOf(
+        "اسمت چیه؟",
+        "یک نام کاربری انتخاب کن",
+        "چند سالته؟",
+        "قدت چقدره؟",
+        "وزنت چقدره؟",
+        "جنسیتت رو انتخاب کن",
+        "سابقه تمرینت چقدره؟",
+        "هدفت چیه؟",
+        "چه نوع تمرینی دوست داری؟",
+        "کجا تمرین می‌کنی؟",
+        "چه تجهیزاتی داری؟",
+        "چند روز در هفته تمرین می‌کنی؟",
+        "هر جلسه چقدر وقت داری؟",
+        "محدودیت یا توضیح خاصی داری؟"
+    )
+
+    val descriptions = listOf(
+        "برای شخصی‌سازی تجربه ARSHYA FIT",
+        "این نام برای پروفایلت استفاده می‌شه",
+        "برای تنظیم ایمن‌تر برنامه تمرینی",
+        "قد خودت رو به سانتی‌متر وارد کن",
+        "وزنت رو به کیلوگرم وارد کن",
+        "یک گزینه رو انتخاب کن",
+        "سطح تجربه خودت رو مشخص کن",
+        "می‌خوای به چه چیزی برسی؟",
+        "سبک مورد علاقه‌ات رو انتخاب کن",
+        "محل تمرینت رو مشخص کن",
+        "وسایلی که در اختیار داری رو انتخاب کن",
+        "تعداد روزهای تمرینت رو انتخاب کن",
+        "زمان مناسب برای هر جلسه رو مشخص کن",
+        "این قسمت اختیاریه"
+    )
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "ARSHYA FIT",
+                    color = Blue,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    "TRAIN • PROGRESS • BE STRONGER",
+                    color = Muted,
+                    fontSize = 9.sp
+                )
             }
-            1 -> {
-                Text("سابقه و هدف", fontSize=22.sp, fontWeight=FontWeight.Bold)
-                Choice("سابقه تمرین",listOf("بدون سابقه","کمتر از ۶ ماه","۶ تا ۱۲ ماه","۱ تا ۲ سال","بیشتر"),exp){exp=it}
-                Choice("سطح",listOf("مبتدی","متوسط","پیشرفته"),exp){exp=it}
-                Choice("هدف اصلی",listOf("عضله‌سازی","افزایش قدرت","استقامت","تناسب اندام","مهارت کالیستنیکس"),goal){goal=it}
-                Choice("نوع تمرین",listOf("بدنسازی","کالیستنیکس","ترکیبی"),style){style=it}
-                Choice("محل تمرین",listOf("خانه","باشگاه","فضای باز"),place){place=it}
-                Choice("تجهیزات",listOf("وزن بدن","دمبل","کش","تجهیزات باشگاه","متنوع"),equipment){equipment=it}
-            }
-            else -> {
-                Text("برنامه و محدودیت‌ها", fontSize=22.sp, fontWeight=FontWeight.Bold)
-                Choice("روز تمرین در هفته",listOf("1","2","3","4","5","6","7"),days){days=it}
-                Choice("مدت هر جلسه",listOf("15","30","45","60","90","120"),minutes){minutes=it}
-                Field("درد یا محدودیت حرکتی (اختیاری)",limits,{limits=it})
-                Text("اگر هنگام تمرین درد داری، آن حرکت را انجام نده و از مربی یا متخصص کمک بگیر.",color=Muted,fontSize=12.sp)
-                Text("خلاصه: ${name.ifBlank{"ورزشکار"}} • $age سال • $goal • $style",color=Blue)
+            Text(
+                "${page + 1}/$total",
+                color = Blue,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
+
+        LinearProgressIndicator(
+            progress = { (page + 1) / total.toFloat() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(7.dp),
+            color = Blue,
+            trackColor = Panel
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(22.dp),
+            colors = CardDefaults.cardColors(containerColor = Panel)
+        ) {
+            Column(
+                Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "PERSONAL SETUP",
+                    color = Blue,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    titles[page],
+                    color = Color.White,
+                    fontSize = 23.sp,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    descriptions[page],
+                    color = Muted,
+                    fontSize = 12.sp
+                )
             }
         }
-        Spacer(Modifier.weight(1f))
-        Row(horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-            if(page>0) OutlinedButton(onClick={page--}, modifier=Modifier.weight(1f)){Text("قبلی")}
-            Button(onClick={
-                if(page<2) page++ else {
-                    val p=UserProfile(name,username,age.toIntOrNull()?.coerceIn(7,100)?:18,
-                        height.toIntOrNull()?.coerceIn(100,230)?:170,weight.toIntOrNull()?.coerceIn(20,250)?:65,
-                        gender,exp,goal,style,place,equipment,days.toIntOrNull()?:3,minutes.toIntOrNull()?:45,limits)
-                    onFinish(p)
+
+        Column(
+            Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            when (page) {
+                0 -> Field("نام", name, { name = it })
+                1 -> Field("نام کاربری", username, { username = it })
+                2 -> Field("سن", age, { age = it }, true)
+                3 -> Field("قد (سانتی‌متر)", height, { height = it }, true)
+                4 -> Field("وزن (کیلوگرم)", weight, { weight = it }, true)
+
+                5 -> QuestionOptions(
+                    listOf("پسر", "دختر"), gender
+                ) { gender = it }
+
+                6 -> QuestionOptions(
+                    listOf(
+                        "بدون سابقه",
+                        "کمتر از ۶ ماه",
+                        "۶ تا ۱۲ ماه",
+                        "۱ تا ۲ سال",
+                        "بیشتر"
+                    ), exp
+                ) { exp = it }
+
+                7 -> QuestionOptions(
+                    listOf(
+                        "عضله‌سازی",
+                        "افزایش قدرت",
+                        "استقامت",
+                        "تناسب اندام",
+                        "مهارت کالیستنیکس"
+                    ), goal
+                ) { goal = it }
+
+                8 -> QuestionOptions(
+                    listOf("بدنسازی", "کالیستنیکس", "ترکیبی"), style
+                ) { style = it }
+
+                9 -> QuestionOptions(
+                    listOf("خانه", "باشگاه", "فضای باز"), place
+                ) { place = it }
+
+                10 -> QuestionOptions(
+                    listOf(
+                        "وزن بدن",
+                        "دمبل",
+                        "کش",
+                        "تجهیزات باشگاه",
+                        "متنوع"
+                    ), equipment
+                ) { equipment = it }
+
+                11 -> QuestionOptions(
+                    listOf("1", "2", "3", "4", "5", "6", "7"),
+                    days
+                ) { days = it }
+
+                12 -> QuestionOptions(
+                    listOf("15", "30", "45", "60", "90", "120"),
+                    minutes
+                ) { minutes = it }
+
+                13 -> {
+                    Field(
+                        "درد یا محدودیت حرکتی (اختیاری)",
+                        limits,
+                        { limits = it }
+                    )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Panel
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            "اگر درد یا آسیب داری، حتماً اینجا بنویس. "
+                                + "برنامه باید متناسب با شرایطت تنظیم بشه.",
+                            color = Muted,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(14.dp)
+                        )
+                    }
                 }
-            }, modifier=Modifier.weight(1f)){Text(if(page==2)"ساخت برنامه من" else "ادامه")}
+            }
+        }
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            if (page > 0) {
+                OutlinedButton(
+                    onClick = { page-- },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("سؤال قبلی")
+                }
+            }
+
+            Button(
+                onClick = {
+                    if (page < total - 1) {
+                        page++
+                    } else {
+                        val profile = UserProfile(
+                            name = name,
+                            username = username,
+                            age = age.toIntOrNull()?.coerceIn(7, 100) ?: 18,
+                            height = height.toIntOrNull()?.coerceIn(100, 230) ?: 170,
+                            weight = weight.toIntOrNull()?.coerceIn(20, 250) ?: 65,
+                            gender = gender,
+                            experience = exp,
+                            goal = goal,
+                            style = style,
+                            place = place,
+                            equipment = equipment,
+                            days = days.toIntOrNull()?.coerceIn(1, 7) ?: 3,
+                            minutes = minutes.toIntOrNull()?.coerceIn(15, 120) ?: 45,
+                            limitations = limits
+                        )
+                        onFinish(profile)
+                    }
+                },
+                modifier = Modifier.weight(1.5f),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(
+                    if (page == total - 1) "ساخت برنامه من" else "ادامه"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun QuestionOptions(
+    options: List<String>,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        options.forEach { item ->
+            val active = selected == item
+
+            Card(
+                onClick = { onSelect(item) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(15.dp),
+                border = if (active)
+                    androidx.compose.foundation.BorderStroke(1.5.dp, Blue)
+                else null,
+                colors = CardDefaults.cardColors(
+                    containerColor = if (active)
+                        Color(0xFF142B48)
+                    else
+                        Panel
+                )
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        item,
+                        color = if (active) Blue else Color.White,
+                        fontWeight = if (active)
+                            FontWeight.Bold
+                        else
+                            FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    if (active) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = "انتخاب شده",
+                            tint = Blue
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Circle,
+                            contentDescription = null,
+                            tint = Muted
+                        )
+                    }
+                }
+            }
         }
     }
 }
