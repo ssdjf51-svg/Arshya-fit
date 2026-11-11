@@ -7,8 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -268,33 +266,6 @@ private suspend fun checkGithubUpdate(): String = withContext(Dispatchers.IO) {
 }
 
 @Composable
-private fun ArshyaButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    fontSize: androidx.compose.ui.unit.TextUnit = 16.sp
-) {
-    val buttonShape = RoundedCornerShape(16.dp)
-    Box(
-        modifier = modifier
-            .heightIn(min = 52.dp)
-            .clip(buttonShape)
-            .background(if (enabled) PrimaryBlue else Color(0xFFB8C5D6))
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 14.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = Color.White,
-            fontSize = fontSize,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
 fun TopHeader(p: UserProfile) {
     Row(
         Modifier.fillMaxWidth().background(CardWhite).padding(horizontal = 18.dp, vertical = 15.dp),
@@ -365,7 +336,7 @@ fun Onboarding(onFinish: (UserProfile) -> Unit) {
         Spacer(Modifier.height(14.dp))
         LinearProgressIndicator(
             progress = { (page + 1) / total.toFloat() },
-            modifier = Modifier.fillMaxWidth().height(6.dp),
+            Modifier.fillMaxWidth().height(6.dp),
             color = PrimaryBlue,
             trackColor = Color(0xFFE1E5EC)
         )
@@ -420,40 +391,33 @@ fun Onboarding(onFinish: (UserProfile) -> Unit) {
             if (page > 0) {
                 OutlinedButton(
                     onClick = { page-- },
-                    modifier = Modifier.weight(1f).height(56.dp),
+                    Modifier.weight(1f).height(56.dp),
                     shape = RoundedCornerShape(30.dp)
                 ) { Text("سؤال قبلی") }
             }
-            ArshyaButton(
-                text = if (page == total - 1) "ساخت برنامه من" else "ادامه",
+            Button(
                 onClick = {
-                    if (page < total - 1) {
-                        page++
-                    } else {
-                        onFinish(
-                            UserProfile(
-                                name = name,
-                                username = username,
-                                age = age.toIntOrNull() ?: 15,
-                                height = height.toIntOrNull() ?: 173,
-                                weight = weight.toIntOrNull() ?: 43,
-                                gender = gender,
-                                experience = exp,
-                                goal = goal,
-                                style = style,
-                                place = place,
-                                equipment = equipment,
-                                days = days.toIntOrNull() ?: 3,
-                                minutes = minutes.toIntOrNull() ?: 45,
-                                limitations = limits
-                            )
+                    if (page < total - 1) page++
+                    else onFinish(
+                        UserProfile(
+                            name = name, username = username,
+                            age = age.toIntOrNull() ?: 15,
+                            height = height.toIntOrNull() ?: 173,
+                            weight = weight.toIntOrNull() ?: 43,
+                            gender = gender, experience = exp, goal = goal,
+                            style = style, place = place, equipment = equipment,
+                            days = days.toIntOrNull() ?: 3,
+                            minutes = minutes.toIntOrNull() ?: 45,
+                            limitations = limits
                         )
-                    }
+                    )
                 },
                 enabled = canContinue,
-                modifier = Modifier.weight(2f).height(56.dp),
-                fontSize = 17.sp
-            )
+                Modifier.weight(2f).height(56.dp),
+                shape = RoundedCornerShape(30.dp)
+            ) {
+                Text(if (page == total - 1) "ساخت برنامه من" else "ادامه", fontSize = 17.sp)
+            }
         }
     }
 }
@@ -538,11 +502,9 @@ fun HomeScreen(p: UserProfile, done: Int, sessions: Int, onStart: () -> Unit) {
                     Text("برنامه امروز", color = PrimaryBlue, fontWeight = FontWeight.Bold)
                     Text("${p.goal} • ${p.style}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MainText)
                     Text("${p.minutes} دقیقه | ${p.days} روز در هفته", color = SecondaryText)
-                    ArshyaButton(
-                        text = "شروع تمرین",
-                        onClick = onStart,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Button(onClick = onStart, Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+                        Text("شروع تمرین")
+                    }
                 }
             }
         }
@@ -604,14 +566,14 @@ fun WorkoutScreen(p: UserProfile, done: Int, onDone: () -> Unit) {
             Text("تکمیل ${checked.size} از ${plan.size}", color = PrimaryBlue)
             LinearProgressIndicator(
                 progress = { if (plan.isEmpty()) 0f else checked.size.toFloat() / plan.size },
-                modifier = Modifier.fillMaxWidth()
+                Modifier.fillMaxWidth()
             )
-            ArshyaButton(
-                text = "ثبت پایان جلسه",
+            Button(
                 onClick = onDone,
                 enabled = checked.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth()
-            )
+                Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) { Text("ثبت پایان جلسه") }
         }
     }
 }
@@ -674,8 +636,7 @@ fun ProfileScreen(
         }
         item { Choice("هدف", listOf("عضله‌سازی", "افزایش قدرت", "استقامت", "تناسب اندام"), goal) { goal = it } }
         item {
-            ArshyaButton(
-                text = "ذخیره تغییرات",
+            Button(
                 onClick = {
                     onSave(
                         p.copy(
@@ -687,25 +648,23 @@ fun ProfileScreen(
                         )
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
-            )
+                Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) { Text("ذخیره تغییرات") }
         }
         item { HorizontalDivider(color = Color(0xFFE0E5EC)) }
         item { Text("به‌روزرسانی برنامه", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MainText) }
         item { Text("نسخه نصب‌شده: 1.0.0", color = PrimaryBlue) }
         item {
-            ArshyaButton(
-                text = if (checking) "در حال بررسی..." else "بررسی نسخه جدید",
-                onClick = onCheck,
-                enabled = !checking,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Button(onClick = onCheck, enabled = !checking, Modifier.fillMaxWidth()) {
+                Text(if (checking) "در حال بررسی..." else "بررسی نسخه جدید")
+            }
         }
         item { Text(updateMessage, color = SecondaryText, fontSize = 12.sp) }
-        item { OutlinedButton(onClick = onOpenGitHub, modifier = Modifier.fillMaxWidth()) { Text("دانلود از GitHub Releases") } }
-        item { OutlinedButton(onClick = onOpenMyket, modifier = Modifier.fillMaxWidth()) { Text("مشاهده در مایکت") } }
+        item { OutlinedButton(onClick = onOpenGitHub, Modifier.fillMaxWidth()) { Text("دانلود از GitHub Releases") } }
+        item { OutlinedButton(onClick = onOpenMyket, Modifier.fillMaxWidth()) { Text("مشاهده در مایکت") } }
         item {
-            OutlinedButton(onClick = onRestartSetup, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(onClick = onRestartSetup, Modifier.fillMaxWidth()) {
                 Text("شروع دوباره پرسش‌نامه")
             }
         }
